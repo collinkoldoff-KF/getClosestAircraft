@@ -1,6 +1,16 @@
 import urllib3
+import os
 from math import sin, cos, sqrt, atan2, radians
-from coords import myLat, myLng
+try:
+    from coords import myLat, myLng
+except:
+    f = open("coords.py", "w")
+    f.write("myLat = 37.3735 \nmyLng = -92.4737")
+    f.close()
+    from coords import myLat, myLng
+
+if os.path.exists("coords.py") == False:
+    input()
 
 if myLat == "Please Enter Latitude":
     print(myLat)

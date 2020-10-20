@@ -1,2 +1,2 @@
-myLat = "Please Enter Latitude"
-myLng = "Please Enter Longitude"
+myLat = 37.3735 
+myLng = -92.4737
