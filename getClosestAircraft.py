@@ -12,11 +12,6 @@ except:
 if os.path.exists("coords.py") == False:
     input()
 
-if myLat == "Please Enter Latitude":
-    print(myLat)
-if myLng == "Please Enter Longitude":
-    print(myLng)
-
 def getDistance(x1, x2, y1, y2):
     R = 6373.0
 
