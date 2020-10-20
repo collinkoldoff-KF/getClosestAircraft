@@ -58,5 +58,5 @@ for line in data:
     except:
         pass
 
-print(f"Callsign {closestAcft[16]}, Type {closestAcft[8]}, Altitude {closestAcft[4]}, Ground Speed {closestAcft[5]}, {closestAcft[11]}-{closestAcft[12]}")
+print(f"Callsign {closestAcft[16]}, Type {closestAcft[8]}, Reg {closestAcft[9]}, Altitude {closestAcft[4]}, Ground Speed {closestAcft[5]}, {closestAcft[11]}-{closestAcft[12]}")
 input("Press Any Key To Continue...")
