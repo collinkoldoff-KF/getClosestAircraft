@@ -12,21 +12,12 @@ except:
 if os.path.exists("coords.py") == False:
     input()
 
+# this is incorrect because longitude changes distance
 def getDistance(x1, x2, y1, y2):
-    R = 6373.0
 
-    x1 = radians(x1)
-    x2 = radians(x2)
-    y1 = radians(y1)
-    y2 = radians(y2)
+    d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
 
-    dlon = x2 - x1
-    dlat = y2 - y1
-
-    a = sin(dlat / 2)**2 + cos(x1) * cos(x2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-    return R * c
+    return d
 
 boundsUpperLat = myLat + 5
 boundsUpperLng = myLng - 5
