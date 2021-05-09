@@ -1,6 +1,8 @@
 import urllib3
 import os
-from math import sin, cos, sqrt, atan2, radians
+import requests
+import json
+from math import sin, cos, sqrt, atan2, radians, pi
 try:
     from coords import myLat, myLng
 except:
@@ -12,42 +14,51 @@ except:
 if os.path.exists("coords.py") == False:
     input()
 
-# this is incorrect because longitude changes distance
 def getDistance(x1, x2, y1, y2):
 
-    d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
+    #φ is latitude, λ is longitude
+    R = 6371e3; #metres
+    φ1 = x1 * pi/180; #φ, λ in radians
+    φ2 = x2 * pi/180;
+    Δφ = (x2-x1) * pi/180;
+    Δλ = (y2-y1) * pi/180;
+
+    a = sin(Δφ/2) * sin(Δφ/2) + cos(φ1) * cos(φ2) * sin(Δλ/2) * sin(Δλ/2);
+    c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    d = R * c; #in metres
 
     return d
 
-boundsUpperLat = myLat + 5
-boundsUpperLng = myLng - 5
+boundsUpperLat = myLat + 1
+boundsUpperLng = myLng - 1
 
-boundsLowerLat = myLat - 5
-boundsLowerLng = myLng + 5
+boundsLowerLat = myLat - 1
+boundsLowerLng = myLng + 1
 
 # http://data-live.flightradar24.com/zones/fcgi/feed.js?bounds=37.3612,47.3612,-84.0261,-94.0261&adsb=1&air=1&array=1
 
-endpoint = f"https://data-live.flightradar24.com/zones/fcgi/feed.js?bounds={boundsUpperLat},{boundsLowerLat},{boundsUpperLng},{boundsUpperLng}&air=1"
-
+endpoint = f"https://data-live.flightradar24.com/zones/fcgi/feed.js?bounds={boundsUpperLat},{boundsLowerLat},{boundsUpperLng},{boundsLowerLng}&air=1"
 
 prevDist = -1
 closestAcft = "None"
 
-data = str(urllib3.PoolManager().request('GET', endpoint).data).split("\\n,")
-data.pop(0)
+response = requests.get(endpoint, headers={'User-Agent':"helloThere"})
+jsonData = json.loads(response.text)
+del jsonData['full_count'],jsonData['version']
 
-for line in data:
-    try:
-        acft = line.split(":")[1].strip("[]").replace("\"", "").split(",")
-        distance = getDistance(myLat, float(acft[1]), myLng, float(acft[2]))
-        if prevDist != -1 and distance < prevDist:
-            prevDist = distance
-            closestAcft = acft
-        elif prevDist == -1:
-            prevDist = distance
-            closestAcft = acft
-    except:
-        pass
+aircrafts = jsonData.keys()
 
-print(f"Callsign {closestAcft[16]}, Type {closestAcft[8]}, Reg {closestAcft[9]}, Altitude {closestAcft[4]}, Ground Speed {closestAcft[5]}, {closestAcft[11]}-{closestAcft[12]}")
-input("Press Any Key To Continue...")
+for aircraft in aircrafts:
+    aircraftData = jsonData[aircraft]
+    distance = getDistance(myLat, float(aircraftData[1]), myLng, float(aircraftData[2]))
+    if prevDist != -1 and distance < prevDist:
+        prevDist = distance
+        closestAcft = aircraftData
+    elif prevDist == -1:
+        prevDist = distance
+        closestAcft = aircraftData
+try: 
+    print(f"Callsign {closestAcft[16]}, Type {closestAcft[8]}, Reg {closestAcft[9]}, Altitude {closestAcft[4]}, Ground Speed {closestAcft[5]}, {closestAcft[11]}-{closestAcft[12]}")
+except:
+    print(closestAcft)
