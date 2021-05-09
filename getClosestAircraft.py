@@ -4,12 +4,12 @@ import requests
 import json
 from math import sin, cos, sqrt, atan2, radians, pi
 try:
-    from coords import myLat, myLng
+    from coords import myLat, myLng, amountToPrint, degRange
 except:
     f = open("coords.py", "w")
-    f.write("myLat = 37.3735 \nmyLng = -92.4737")
+    f.write("myLat = 37.3735\nmyLng = -92.4737\ndegRange = 1\namountToPrint = 3")
     f.close()
-    from coords import myLat, myLng
+    from coords import myLat, myLng, amountToPrint, degRange
 
 if os.path.exists("coords.py") == False:
     input()
@@ -30,18 +30,15 @@ def getDistance(x1, x2, y1, y2):
 
     return d
 
-boundsUpperLat = myLat + 1
-boundsUpperLng = myLng - 1
+boundsUpperLat = myLat + degRange
+boundsUpperLng = myLng - degRange
 
-boundsLowerLat = myLat - 1
-boundsLowerLng = myLng + 1
+boundsLowerLat = myLat - degRange
+boundsLowerLng = myLng + degRange
 
 # http://data-live.flightradar24.com/zones/fcgi/feed.js?bounds=37.3612,47.3612,-84.0261,-94.0261&adsb=1&air=1&array=1
 
 endpoint = f"https://data-live.flightradar24.com/zones/fcgi/feed.js?bounds={boundsUpperLat},{boundsLowerLat},{boundsUpperLng},{boundsLowerLng}&air=1"
-
-prevDist = -1
-closestAcft = "None"
 
 response = requests.get(endpoint, headers={'User-Agent':"helloThere"})
 jsonData = json.loads(response.text)
@@ -52,6 +49,7 @@ aircrafts = jsonData.keys()
 for aircraft in aircrafts:
     aircraftData = jsonData[aircraft]
     distance = getDistance(myLat, float(aircraftData[1]), myLng, float(aircraftData[2]))
+    aircraftData.append(round(distance/1852,3))
     if aircraftData[5] == "":
         aircraftData[5] = "N/A"
     if aircraftData[9] == "":
@@ -64,13 +62,32 @@ for aircraft in aircrafts:
         aircraftData[11] = "N/A"
     if aircraftData[12] == "":
         aircraftData[12] = "N/A"
-    if prevDist != -1 and distance < prevDist:
-        prevDist = distance
-        closestAcft = aircraftData
-    elif prevDist == -1:
-        prevDist = distance
-        closestAcft = aircraftData
-try: 
-    print(f"Callsign: {closestAcft[16]}, Type: {closestAcft[8]}, Reg: {closestAcft[9]}, Altitude: {closestAcft[4]}, Ground Speed: {closestAcft[5]}, Route: {closestAcft[11]}-{closestAcft[12]}")
-except:
-    print(closestAcft)
+    try:
+        aircraftDatas.append(aircraftData)
+    except:
+        aircraftDatas = [aircraftData]
+
+aircraftDatas.sort(key = lambda aircraftDatas: aircraftDatas[19])
+
+i1 = 1
+for item in aircraftDatas:
+    item.append(i1)
+    i1+=1
+
+i2 = 0
+for closestAcft in aircraftDatas:
+    if i2 == 0:
+        try:
+            print(f"{closestAcft[20]}: Callsign: {closestAcft[16]}, Type: {closestAcft[8]}, Reg: {closestAcft[9]}, Altitude: {closestAcft[4]}, Ground Speed: {closestAcft[5]}, Route: {closestAcft[11]}-{closestAcft[12]}, Distance(nm): {closestAcft[19]}")
+            print("\n")
+        except:
+            print("None")
+            break
+    elif i2 != amountToPrint:
+        try:
+            print(f"{closestAcft[20]}: Callsign: {closestAcft[16]}, Type: {closestAcft[8]}, Reg: {closestAcft[9]}, Altitude: {closestAcft[4]}, Ground Speed: {closestAcft[5]}, Route: {closestAcft[11]}-{closestAcft[12]}, Distance(nm): {closestAcft[19]}")
+        except:
+            break
+    elif i2 == amountToPrint:
+        break
+    i2+=1
