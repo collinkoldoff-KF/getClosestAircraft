@@ -52,6 +52,18 @@ aircrafts = jsonData.keys()
 for aircraft in aircrafts:
     aircraftData = jsonData[aircraft]
     distance = getDistance(myLat, float(aircraftData[1]), myLng, float(aircraftData[2]))
+    if aircraftData[5] == "":
+        aircraftData[5] = "N/A"
+    if aircraftData[9] == "":
+        aircraftData[9] = "N/A"
+    if aircraftData[8] == "":
+        aircraftData[8] = "N/A"
+    if aircraftData[16] == "":
+        aircraftData[16] = "N/A"
+    if aircraftData[11] == "":
+        aircraftData[11] = "N/A"
+    if aircraftData[12] == "":
+        aircraftData[12] = "N/A"
     if prevDist != -1 and distance < prevDist:
         prevDist = distance
         closestAcft = aircraftData
@@ -59,6 +71,6 @@ for aircraft in aircrafts:
         prevDist = distance
         closestAcft = aircraftData
 try: 
-    print(f"Callsign {closestAcft[16]}, Type {closestAcft[8]}, Reg {closestAcft[9]}, Altitude {closestAcft[4]}, Ground Speed {closestAcft[5]}, {closestAcft[11]}-{closestAcft[12]}")
+    print(f"Callsign: {closestAcft[16]}, Type: {closestAcft[8]}, Reg: {closestAcft[9]}, Altitude: {closestAcft[4]}, Ground Speed: {closestAcft[5]}, Route: {closestAcft[11]}-{closestAcft[12]}")
 except:
     print(closestAcft)
