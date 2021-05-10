@@ -9,7 +9,8 @@ Run the getClosestAircraft.py file once, then input your coordinates and prefere
 ### DETAILS
 
 The program will scan for aircraft within a configurable degree range* of latitude and longitude of your location, and return details about the closest one.
-* ±1° by default
+
+\*Â±1Â° by default
 
 ### FUTURE
 
