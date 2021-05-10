@@ -4,7 +4,7 @@
 
 ### INSTALLATION
 
-Run the getClosestAircraft.py file once, then input your coordinates and preferences into coords.py. Flightradar24 uses 4 decimal places, so we reccomend that as well.
+Run the getClosestAircraft.py file once, then input your coordinates and preferences into coords.py. Flightradar24 uses 4 decimal places, so we recommend that as well.
 
 ### DETAILS
 
